@@ -12,7 +12,7 @@ Event=$radarr_eventtype
 PLEXLIBRARY=1   #Get this by hovering over library in the web interface
 TIMEOUT=600     # In seconds
 SCANFILE=$radarr_moviefile_path
-SCANFOLDER=$radarr_moive_path
+SCANFOLDER=$radarr_movie_path
 MODDATE=$(stat -c %Y "$SCANFILE")
 
 if [[ $Event == Download ||  $Event == Upgrade  ||  $Event == Rename ]]; then  
