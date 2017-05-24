@@ -43,6 +43,8 @@ fi
 
 ##
 # Remove unionFS hidden files created by Radarr removing older content
+# credit this portion to @numberedthought :)
+#
 find /plexmedia/media/.unionfs-fuse -name '*_HIDDEN~' | while read line; do
 oldPath=${line#/plexmedia/media/.unionfs-fuse}
 newPath=GD:/plexmedia_clear${oldPath%_HIDDEN~}
