@@ -59,7 +59,7 @@ find "/plexmedia/media/.unionfs-fuse" -mindepth 1 -type d -empty -delete
 
 # Run the sync job
 _logfile="/home/user/scripts/logs/rclone_$_now.log" 
-/usr/bin/rclone move /plexmedia/local GD:media_folder -v --exclude="/.unionfs-fuse/**" --exclude *.partial~ --exclude *_HIDDEN~ --transfers=10 --checkers=10 --min-age $DAYSd --no-traverse --log-file=$_logfile
+/usr/bin/rclone move /plexmedia/local GD:media_folder -v --exclude="/.unionfs-fuse/**" --transfers=10 --checkers=10 --min-age $DAYSd --no-traverse --log-file=$_logfile
 
 # remove the PID file
 rm $PIDFILE
