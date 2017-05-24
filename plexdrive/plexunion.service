@@ -1,0 +1,21 @@
+[Unit]
+Description=UnionFS Mount (plexdrive)
+AssertPathIsDirectory=/mnt/media
+After=plexdrive.service
+Requires=plexdrive.service
+PartOf=plexdrive.service
+
+[Service]
+Type=forking
+User=user
+Group=user
+ExecStartPre=sleep 20
+ExecStart=/usr/bin/unionfs-fuse -o cow,allow_other,large_read,statfs_omit_ro,atomic_o_trunc,auto_cache,big_writes,default_permissions,splice_move,splice_read,nonempty -o uid=1000 -o gid=1000 /mnt/local=RW:/mnt/plexdrive=RO: /mnt/media
+ExecStop=/bin/fusermount -uz /mnt/media
+Restart=on-abort
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+
+[Install]
+WantedBy=default.target
