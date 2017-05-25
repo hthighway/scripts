@@ -28,11 +28,15 @@ if [[ $Event == Download ||  $Event == Upgrade  ||  $Event == Rename ]]; then
           exit 1
       fi
    done
-
-   export LD_LIBRARY_PATH=/usr/lib/plexmediaserver 
-   export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=/var/lib/plexmediaserver/Library/Application\ Support      
-   /usr/lib/plexmediaserver/Plex\ Media\ Scanner -s -r -c $PLEXLIBRARY -d "$SCANDIR" > /dev/null 2>&1
-   sleep 8
+   systemctl is-active plexunion >/dev/null 2>&1 && PU=1 || PU=0
+   systemctl is-active plexdrive >/dev/null 2>&1 && PD=1 || PD=0 
+   if [ $PD -eq 1 ] && [ $PU -eq 1 ]
+   then
+   	export LD_LIBRARY_PATH=/usr/lib/plexmediaserver 
+   	export PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=/var/lib/plexmediaserver/Library/Application\ Support      
+   	/usr/lib/plexmediaserver/Plex\ Media\ Scanner -s -r -c $PLEXLIBRARY -d "$SCANDIR" > /dev/null 2>&1
+   	sleep 8
+   fi
    
    i=0
    while pidof -o %PPID -x "$(basename $0)"
@@ -47,8 +51,13 @@ if [[ $Event == Download ||  $Event == Upgrade  ||  $Event == Rename ]]; then
         fi
     done
 
-    curl -X PUT http://127.0.0.1:32400/library/sections/$PLEXLIBRARY/emptyTrash?X-Plex-Token=xxxxxxxxxxxxx > /dev/null 2>&1
-    echo "Plex Library Updated"  
+    systemctl is-active plexunion >/dev/null 2>&1 && PU=1 || PU=0
+    systemctl is-active plexdrive >/dev/null 2>&1 && PD=1 || PD=0 
+    if [ $PD -eq 1 ] && [ $PU -eq 1 ]
+    then
+    	curl -X PUT http://127.0.0.1:32400/library/sections/$PLEXLIBRARY/emptyTrash?X-Plex-Token=xxxxxxxxxxxxx > /dev/null 2>&1
+    	echo "Plex Library Trash Emptied"
+    fi
 
 fi
 
