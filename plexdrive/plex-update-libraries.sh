@@ -5,7 +5,7 @@
 ## OS: Linux Ubuntu 16.04
 ## Make script executable by chmod a+x plex-scan-new.sh
 ## Add script to crontab -e ( paste the line bellow without ## )
-## */30 * * * *   /path to script/plex-update-libraries.sh >/dev/null 2>&1
+## */15 * * * *   /path to script/plex-update-libraries.sh >/dev/null 2>&1
 ## Make sure you disable all Plex automatic & scheduled library scans.
 if pidof -o %PPID -x "$0"; then
    echo "$(date "+%d.%m.%Y %T") Exit, already running."
