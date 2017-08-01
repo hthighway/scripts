@@ -8,7 +8,7 @@ Type=simple
 #
 # uid & gid values are for the user that you want to run plexdrive, $id will give you the values for the logged in user
 # 
-ExecStart=/opt/plexdrive/plexdrive -c /home/user/.plexdrive -v 2 -o allow_other --uid=1000 --gid=1000 /mnt/plexdrive
+ExecStart=/usr/bin/plexdrive mount -c /home/user/.plexdrive --cache-file=/home/user/.plexdrive/cache.bolt -v 3 -o allow_other --max-chunks=250 --refresh-interval=1m --uid=1001 --gid=1001 /mnt/plexdrive
 ExecStop=/bin/fusermount -uz /mnt/plexdrive
 Restart=on-abort
 RestartSec=30
