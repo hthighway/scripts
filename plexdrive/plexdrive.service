@@ -1,24 +1,17 @@
 [Unit]
 Description=Plexdrive
-AssertPathIsDirectory=/mnt/plexdrive
-After=network-online.target
+AssertPathIsDirectory=/plexmedia/plexdrive
+After=syslog.target network.target
+PropagatesReloadTo=plexunion.service plexmediaserver.service
 
 [Service]
 Type=simple
-#
-# uid & gid values are for the user that you want to run plexdrive, $id will give you the values for the logged in user
-# 
-ExecStart=/usr/bin/plexdrive mount -c /home/user/.plexdrive --cache-file=/home/user/.plexdrive/cache.bolt -v 3 -o allow_other --max-chunks=250 --refresh-interval=1m --uid=1001 --gid=1001 /mnt/plexdrive
-ExecStop=/bin/fusermount -uz /mnt/plexdrive
-Restart=on-abort
-RestartSec=30
-StartLimitInterval=200
-StartLimitBurst=5
+ExecStart=/usr/bin/plexdrive mount -c /home/user/.plexdrive --cache-file=/home/user/.plexdrive/cache.bolt -v 3 -o allow_other --max-chunks=250 --refresh-interval=1m$
+ExecStop=/bin/fusermount -uz /plexmedia/plexdrive
+Restart=on-failure
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
 
 [Install]
 WantedBy=default.target
-
-
-#
-# To monitor the PlexDrive activity use: sudo journalctl -f -u plexdrive
-#
