@@ -27,3 +27,5 @@ sudo systemctl start plexunion
 # Additional Notes:
 
 if you use other services that will connect to the mount (Plex, Sonarr, Radarr) consider modifying the service file for those and setting the `After=` value to `After=plexunion.service`.
+
+Every little bit helps: https://paypal.me/pwhdesigns
