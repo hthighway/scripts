@@ -1,3 +1,7 @@
+# Various Plexdrive related scripts
+Questions and comments can be posted in Issues section.
+If you find scripts usefull consider the following link: https://paypal.me/pwhdesigns
+
 These systemd files will lauch plexdrive and then create a UNIONFS merging a local and remote folder
 
 See https://github.com/dweidenfeld/plexdrive for instructions on how to initally setup PLEXDRIVE
@@ -27,5 +31,3 @@ sudo systemctl start plexunion
 # Additional Notes:
 
 if you use other services that will connect to the mount (Plex, Sonarr, Radarr) consider modifying the service file for those and setting the `After=` value to `After=plexunion.service`.
-
-Every little bit helps: https://paypal.me/pwhdesigns
