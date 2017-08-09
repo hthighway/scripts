@@ -1,0 +1,124 @@
+#
+# Default server configuration
+#
+# Use this guide to setup NGINX+Letencrypt on Ubuntu 16.04
+# https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+# The following is nginx file is taken in part from
+# quickbox.io/wiki/set-up-a-cdn-for-plex-with-cloudflare-nginx/
+#
+# change > yourdomain.com < to whatever domain name you are using
+# 
+#
+
+#Upstream to Plex
+upstream plex_backend {
+    server 127.0.0.1:32400;
+    keepalive 32;
+}
+
+server {
+        listen 80;
+        listen [::]:80;
+       
+        root /var/www/html;
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+        server_name yourdomain.com www.yourdomain.com;
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+        # PlexPy
+        location /plexpy {
+                proxy_pass http://127.0.0.1:8181;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+        # Ombi
+        location /ombi {
+                proxy_pass http://127.0.0.1:3579/ombi;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+        
+        listen 443 ssl; # managed by Certbot
+        ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem; # managed by Certbot
+        ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem; # managed by Certbot
+        include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+       
+        # Redirect non-https traffic to https
+        if ($scheme != "https") {
+            return 301 https://$host$request_uri;
+        } 
+        # managed by Certbot
+}
+
+#
+# for plex.tv
+#
+server {
+        listen 80;
+        listen [::]:80;
+        #Faster resolving, improves stapling time. Timeout and nameservers may need to be adjusted for your location Google's have been used here.
+        resolver 8.8.4.4 8.8.8.8 valid=300s;
+        resolver_timeout 10s;
+ 
+        #Will ensure https is always used by supported browsers which prevents any server-side http > https redirects, as the browser will internally correct any request to https.
+        #Recommended to submit to your domain to https://hstspreload.org as well.
+        #!WARNING! Only enable this if you intend to only serve Plex over https, until this rule expires in your browser it WONT BE POSSIBLE to access Plex via http, remove 'includeSubDomains;' if you only want it to effect your Plex (sub-)domain.
+        #This is disabled by default as it could cause issues with some playback devices it's advisable to test it with a small max-age and only enable if you don't encounter issues. (Haven't encountered any yet)
+        add_header Strict-Transport-Security "max-age=63072000; preload" always;
+        #Why this is important: https://blog.cloudflare.com/ocsp-stapling-how-cloudflare-just-made-ssl-30/
+        ssl_stapling on;
+        ssl_stapling_verify on;
+        #Plex has A LOT of javascript, xml and html. This helps a lot, but if it causes playback issues with devices turn it off. (Haven't encountered any yet)
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1000;
+        gzip_proxied any;
+        gzip_types text/plain text/css text/xml application/xml text/javascript application/x-javascript image/svg+xml;
+        gzip_disable "MSIE [1-6]\.";
+        #Nginx default client_max_body_size is 1MB, which breaks Camera Upload feature from the phones.
+        #Increasing the limit fixes the issue. Anyhow, if 4K videos are expected to be uploaded, the size might need to be increased even more
+        client_max_body_size 100M;
+        #Forward real ip and host to Plex
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        #Websockets
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        #Buffering off send to the client as soon as the data is received from Plex.
+        proxy_redirect off;
+        proxy_buffering off;
+
+        root /var/www/plex.yourdomain.com;
+        
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+        
+        server_name plex.yourdomain.com;
+        
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                #try_files $uri $uri/ =404;
+                proxy_pass http://plex_backend;
+        }
+        
+        if ($scheme != "https") {
+          return 301 https://$host$request_uri;
+        } # managed by Certbot
+       
+        listen 443 ssl; # managed by Certbot
+        ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem; # managed by Certbot
+        ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem; # managed by Certbot
+        include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+}
