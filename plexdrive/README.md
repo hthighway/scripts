@@ -11,7 +11,6 @@ See: https://www.devmanuals.net/install/ubuntu/ubuntu-16-04-LTS-Xenial-Xerus/how
 
 
 ```
-sudo touch /etc/systemd/system/plexdrive.service
 sudo nano /etc/systemd/system/plexdrive.service
 ```
 > paste content of plexdrive.service here
@@ -20,7 +19,6 @@ sudo systemctl enable plexdrive.service
 sudo systemctl start plexdrive
 ```
 ```
-sudo touch /etc/systemd/system/plexunion.service
 sudo nano /etc/systemd/system/plexunion.service
 ```
 > paste content of plexunion.service here
