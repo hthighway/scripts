@@ -3,7 +3,7 @@
 #
 # Use this guide to setup NGINX+Letencrypt on Ubuntu 16.04
 # https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
-# The following is nginx file is taken in part from
+# The following nginx file is taken in part from
 # quickbox.io/wiki/set-up-a-cdn-for-plex-with-cloudflare-nginx/
 #
 # change > yourdomain.com < to whatever domain name you are using
