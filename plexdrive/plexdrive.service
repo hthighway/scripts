@@ -6,7 +6,7 @@ PropagatesReloadTo=plexunion.service plexmediaserver.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/plexdrive mount -c /home/user/.plexdrive --cache-file=/home/user/.plexdrive/cache.bolt -v 3 -o allow_other --max-chunks=250 --refresh-interval=1m$
+ExecStart=/usr/bin/plexdrive mount -c /home/user/.plexdrive --cache-file=/home/user/.plexdrive/cache.bolt -v 3 -o allow_other 
 ExecStop=/bin/fusermount -uz /plexmedia/plexdrive
 Restart=on-failure
 RestartSec=5
